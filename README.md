@@ -6,7 +6,7 @@ It is a simple login and registration application. This application is developed
 
 git clone
 
-## Setup
+## S\\
 
 1. Install MongoDB on your system.
 2. Istall Flask and pymongo using pip.
