@@ -12,45 +12,56 @@
             --text-color: #2d3436;
             --border-color: #dcdde1;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         body {
             background-color: var(--secondary-color);
             color: var(--text-color);
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-
         .dashboard-header {
             background-color: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
         }
-
         .dashboard-title {
             font-size: 24px;
             color: var(--primary-color);
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
         }
-
+        .logout-button {
+            float: right;
+            padding: 10px 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        .logout-button:hover {
+            background-color: #c0392b;
+        }
         .search-container {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
-
         .search-input {
             flex: 1;
             padding: 12px;
@@ -59,12 +70,10 @@
             font-size: 14px;
             transition: border-color 0.3s;
         }
-
         .search-input:focus {
             outline: none;
             border-color: var(--primary-color);
         }
-
         .search-button {
             padding: 12px 24px;
             background-color: var(--primary-color);
@@ -74,61 +83,50 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-
         .search-button:hover {
             background-color: #357abd;
         }
-
         .table-container {
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             overflow: hidden;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
         }
-
         th, td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
-
         th {
             background-color: #f8f9fa;
             font-weight: 600;
             color: #2d3436;
         }
-
         tr:hover {
             background-color: #f8f9fa;
         }
-
         .loading {
             text-align: center;
             padding: 20px;
             display: none;
         }
-
         .no-results {
             text-align: center;
             padding: 20px;
             color: #666;
             display: none;
         }
-
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
             }
-
             .table-container {
                 overflow-x: auto;
             }
-
             th, td {
                 padding: 10px;
             }
@@ -140,6 +138,10 @@
         <div class="dashboard-header">
             <h1 class="dashboard-title">
                 <i class="fas fa-users"></i> User Management Dashboard
+                <!-- Logout Button -->
+                <button onclick="logout()" class="logout-button">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
             </h1>
             <div class="search-container">
                 <input type="text" id="searchInput" class="search-input" placeholder="Search by Registration Number...">
@@ -148,7 +150,6 @@
                 </button>
             </div>
         </div>
-
         <div class="table-container">
             <div id="loading" class="loading">
                 <i class="fas fa-spinner fa-spin"></i> Loading...
@@ -172,7 +173,6 @@
             </table>
         </div>
     </div>
-
     <script>
         // Load all users when page loads
         document.addEventListener('DOMContentLoaded', () => {
@@ -195,7 +195,6 @@
             const loading = document.getElementById('loading');
             const noResults = document.getElementById('noResults');
             const table = document.getElementById('usersTable');
-
             loading.style.display = 'block';
             noResults.style.display = 'none';
             table.style.display = 'none';
@@ -205,13 +204,11 @@
                 .then(users => {
                     const tbody = document.getElementById('usersTableBody');
                     tbody.innerHTML = '';
-
                     if (users.length === 0) {
                         loading.style.display = 'none';
                         noResults.style.display = 'block';
                         return;
                     }
-
                     users.forEach(user => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -224,7 +221,6 @@
                         `;
                         tbody.appendChild(row);
                     });
-
                     loading.style.display = 'none';
                     table.style.display = 'table';
                 })
@@ -239,10 +235,23 @@
         function escapeHtml(unsafe) {
             return unsafe
                 .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
+                .replace(/</g, "<")
+                .replace(/>/g, ">")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
+        }
+
+        // Function to handle logout
+        function logout() {
+            fetch('/logout', { method: 'POST' }) // Send a POST request to the /logout route
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url; // Redirect to the home page
+                    }
+                })
+                .catch(error => {
+                    console.error('Logout failed:', error);
+                });
         }
     </script>
 </body>

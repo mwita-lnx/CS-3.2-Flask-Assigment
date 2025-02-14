@@ -1,6 +1,9 @@
 import pymongo
-from flask import request
-from bson import json_util
+import smtplib
+from email.mime.text import MIMEText
+import random
+import string
+from flask import request, url_for
 
 client = pymongo.MongoClient('mongodb://127.0.0.1:27017/')
 userdb = client['userdb']
@@ -64,3 +67,45 @@ def search_users(reg_number=None):
     except Exception as e:
         print(f"Search error: {e}")
         return []
+
+def generate_token():
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=50))
+
+def send_reset_email(email):
+    print(email)
+    user = users.find_one({"email": email})
+    print(user)
+    if not user:
+        return False
+    
+    token = generate_token()
+    users.update_one({"email": email}, {"$set": {"reset_token": token}})
+
+    print(token)
+    
+    reset_link = url_for('reset_password', token=token, _external=True)
+    
+    your_email= 'amiremir346@gmail.com'
+    receipient_email=email
+    subject="Reset password email"
+    msg = MIMEText(f"Click the link to reset your password: {reset_link}")
+    text=f"Subject: {subject}\n\n{msg}"
+
+    print(msg)
+    
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(your_email,'fpfthcetaetnuexr')
+        server.sendmail(your_email,receipient_email,text)
+        return True
+    except Exception as e:
+        print(f"SMTP error: {e}")
+        return False
+def reset_password(token, new_password):
+    user = users.find_one({"reset_token": token})
+    if not user:
+        return False
+    
+    users.update_one({"reset_token": token}, {"$set": {"password": new_password, "reset_token": None}})
+    return True
