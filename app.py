@@ -1,9 +1,14 @@
+import smtplib
+from email.mime.text import MIMEText
 import db
 import json
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, url_for, session, redirect
 from bson import json_util  # Add this import for MongoDB object serialization
+import random
+import string
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -12,11 +17,19 @@ def home():
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     status, username = db.check_user()
-    data = {
-        "username": username,
-        "status": status
-    }
-    return json.dumps(data)
+    if status:
+        session['username'] = username
+        data = {
+            "username": username,
+            "status": status
+        }
+        return json.dumps(data)
+    return json.dumps({"status": False})
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('home'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -25,6 +38,8 @@ def register():
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
+    if 'username' not in session:
+        return redirect(url_for('home'))
     return render_template("dash.html")
 
 @app.route('/api/search', methods=['GET'])
@@ -37,5 +52,23 @@ def search():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        status = db.send_reset_email(email)
+        return json.dumps({"status": status})
+    return render_template("forgot_password.html")
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if 'username' not in session:
+        return redirect(url_for('home'))
+    if request.method == 'POST':
+        new_password = request.form['new_password']
+        status = db.reset_password(token, new_password)
+        return json.dumps({"status": status})
+    return render_template("reset_password.html", token=token)
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
