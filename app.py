@@ -62,8 +62,7 @@ def forgot_password():
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-    if 'username' not in session:
-        return redirect(url_for('home'))
+
     if request.method == 'POST':
         new_password = request.form['new_password']
         status = db.reset_password(token, new_password)

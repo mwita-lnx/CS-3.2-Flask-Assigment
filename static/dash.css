@@ -1,0 +1,212 @@
+/* Import Poppins font face declarations from original CSS */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    src: url("../fonts/poppins/poppins-v5-latin-regular.eot");
+    src: local("Poppins Regular"), local("Poppins-Regular"),
+         url("../fonts/poppins/poppins-v5-latin-regular.eot?#iefix") format("embedded-opentype"),
+         url("../fonts/poppins/poppins-v5-latin-regular.woff2") format("woff2"),
+         url("../fonts/poppins/poppins-v5-latin-regular.woff") format("woff"),
+         url("../fonts/poppins/poppins-v5-latin-regular.ttf") format("truetype"),
+         url("../fonts/poppins/poppins-v5-latin-regular.svg#Poppins") format("svg");
+  }
+  
+  :root {
+      --primary-color: #6dabe4;
+      --hover-color: #4292dc;
+      --bg-color: #f8f8f8;
+      --text-color: #222;
+      --border-color: #999;
+      --container-shadow: 0px 15px 16.83px 0.17px rgba(0, 0, 0, 0.05);
+  }
+  
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Poppins, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-color);
+      background: var(--bg-color);
+      font-weight: 400;
+  }
+  
+  .container {
+      width: 900px;
+      max-width: calc(100% - 30px);
+      margin: 0 auto;
+      padding: 20px;
+  }
+  
+  .dashboard-header {
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: var(--container-shadow);
+      -moz-box-shadow: var(--container-shadow);
+      -webkit-box-shadow: var(--container-shadow);
+      margin-bottom: 20px;
+  }
+  
+  .dashboard-title {
+      font-size: 36px;
+      line-height: 1.66;
+      margin: 0;
+      padding: 0;
+      font-weight: bold;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+  }
+  
+  .logout-button {
+      display: inline-block;
+      background: #e74c3c;
+      color: #fff;
+      border: none;
+      width: auto;
+      padding: 15px 39px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 300ms ease 0s;
+  }
+  
+  .logout-button:hover {
+      background: #c0392b;
+  }
+  
+  .search-container {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+  }
+  
+  .search-input {
+      flex: 1;
+      display: block;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      padding: 6px 30px;
+      font-family: Poppins;
+      box-sizing: border-box;
+      font-size: 14px;
+  }
+  
+  .search-input:focus {
+      outline: none;
+      border-bottom: 1px solid var(--text-color);
+  }
+  
+  .search-button {
+      display: inline-block;
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      width: auto;
+      padding: 15px 39px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 300ms ease 0s;
+  }
+  
+  .search-button:hover {
+      background: var(--hover-color);
+  }
+  
+  .table-container {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: var(--container-shadow);
+      -moz-box-shadow: var(--container-shadow);
+      -webkit-box-shadow: var(--container-shadow);
+      padding: 20px;
+      overflow: hidden;
+  }
+  
+  table {
+      width: 100%;
+      border-collapse: collapse;
+  }
+  
+  th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+  }
+  
+  th {
+      font-weight: 500;
+      color: var(--text-color);
+      font-size: 14px;
+  }
+  
+  td {
+      color: #777;
+      font-size: 13px;
+  }
+  
+  tr:hover {
+      background-color: var(--bg-color);
+  }
+  
+  .loading, .no-results {
+      text-align: center;
+      padding: 30px;
+      color: #777;
+      font-size: 15px;
+      display: none;
+  }
+  
+  /* Media Queries */
+  @media screen and (max-width: 1200px) {
+      .container {
+          width: calc(100% - 30px);
+          max-width: 100%;
+      }
+  }
+  
+  @media screen and (min-width: 1024px) {
+      .container {
+          max-width: 1200px;
+      }
+  }
+  
+  @media screen and (max-width: 768px) {
+      .container {
+          padding: 15px;
+      }
+      
+      .dashboard-header {
+          padding: 20px;
+      }
+      
+      .dashboard-title {
+          font-size: 28px;
+          flex-direction: column;
+          gap: 15px;
+      }
+      
+      .search-container {
+          flex-direction: column;
+      }
+      
+      .search-input, .search-button {
+          width: 100%;
+      }
+      
+      .table-container {
+          overflow-x: auto;
+      }
+      
+      th, td {
+          padding: 10px;
+      }
+  }
