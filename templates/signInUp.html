@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In/Up Form</title>
+    
+    <!-- Font Icons -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/material-icon/css/material-design-iconic-font.min.css') }}">
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css'>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="form-container sign-up-container">
+            <form id="register-form">
+                <h1>Create Account</h1>
+                <div class="error-message" id="error_message"></div>
+                <div class="success-message" id="signup_message"></div>
+                <input type="text" id="username" placeholder="Username" />
+                <input type="text" id="name" placeholder="Full Name" />
+                <input type="text" id="address" placeholder="Address" />
+                <input type="text" id="reg_number" placeholder="Registration Number" />
+                <input type="tel" id="phone" placeholder="Phone Number" />
+                <input type="email" id="email" placeholder="Email" />
+                <input type="password" id="pass" placeholder="Password" />
+                <input type="password" id="repass" placeholder="Repeat Password" />
+                <button type="button" onclick="register();">Sign Up</button>
+            </form>
+        </div>
+        <div class="form-container sign-in-container">
+            <form id="login-form">
+                <h1>Sign in</h1>
+                <div class="error-message" id="login_error_message"></div>
+                <div class="success-message" id="login_message"></div>
+                <input type="text" id="login_username" placeholder="Username" />
+                <input type="password" id="login_pass" placeholder="Password" />
+                <div class="form-group">
+                    <input type="checkbox" name="remember-me" id="remember-me" class="agree-term" />
+                    <label for="remember-me">Remember me</label>
+                </div>
+                <button type="button" onclick="login();">Sign In</button>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>To keep connected with us please login with your personal info</p>
+                    <button class="ghost" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Enter your personal details and start journey with us</p>
+                    <button class="ghost" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script>
+        const signUpButton = document.getElementById('signUp');
+        const signInButton = document.getElementById('signIn');
+        const container = document.getElementById('container');
+
+        signUpButton.addEventListener('click', () => {
+            container.classList.add('right-panel-active');
+        });
+
+        signInButton.addEventListener('click', () => {
+            container.classList.remove('right-panel-active');
+        });
+
+        function login() {
+            if (($("#login_username").val() == "") || ($("#login_pass").val() == '')) {
+                $("#login_error_message").text("All fields are required.");
+                $("#login_error_message").show().delay(3000).hide(0);
+            } else {
+                var data = new FormData();
+                data.append('username', $("#login_username").val());
+                data.append('pass', $("#login_pass").val());
+                
+                $.ajax({
+                    type: 'POST',
+                    enctype: 'multipart/form-data',
+                    url: '/signin',
+                    processData: false,
+                    cache: false,
+                    timeout: 800000,
+                    contentType: false,
+                    data: data,
+                    success: function(response) {
+                        var data = JSON.parse(response);
+                        if (data['status'] == true) {
+                            $('#login_message').text("Welcome " + data['username'] + ", Login Successfully.");
+                            $('#login_message').show().delay(3000).hide(0);
+                            window.location = "/dashboard";
+                        } else {
+                            $("#login_error_message").text("Incorrect Username and Password.");
+                            $("#login_error_message").show().delay(3000).hide(0);
+                        }
+                    }
+                });
+            }
+        }
+
+        function register() {
+            if (($("#username").val() == '') || ($("#name").val() == '') || 
+                ($("#address").val() == '') || ($("#reg_number").val() == '') ||
+                ($("#phone").val() == '') || ($("#email").val() == "") ||
+                ($("#pass").val() == '') || ($("#repass").val() == "")) {
+                $("#error_message").text("All fields are required");
+                $("#error_message").show().delay(3000).hide(0);
+            } else if ($("#pass").val() != $("#repass").val()) {
+                $("#error_message").text("Passwords are not same");
+                $("#error_message").show().delay(3000).hide(0);
+            } else {
+                var data = new FormData();
+                data.append('username', $("#username").val());
+                data.append('name', $("#name").val());
+                data.append('address', $("#address").val());
+                data.append('reg_number', $("#reg_number").val());
+                data.append('phone', $("#phone").val());
+                data.append('email', $("#email").val());
+                data.append('pass', $("#pass").val());
+
+                $.ajax({
+                    type: 'POST',
+                    enctype: 'multipart/form-data',
+                    url: '/register',
+                    processData: false,
+                    cache: false,
+                    timeout: 800000,
+                    contentType: false,
+                    data: data,
+                    success: function(response) {
+                        var data = JSON.parse(response);
+                        if (data == true) {
+                            $('#signup_message').show().delay(3000).hide(0);
+                            setTimeout(function() {
+                                window.location = "/";
+                            }, 3000);
+                        } else {
+                            $("#error_message").text("Username or Email already exists.");
+                            $("#error_message").show().delay(3000).hide(0);
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
