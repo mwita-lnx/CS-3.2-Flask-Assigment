@@ -243,15 +243,22 @@
 
         // Function to handle logout
         function logout() {
-            fetch('/logout', { method: 'POST' }) // Send a POST request to the /logout route
-                .then(response => {
-                    if (response.redirected) {
-                        window.location.href = response.url; // Redirect to the home page
-                    }
-                })
-                .catch(error => {
-                    console.error('Logout failed:', error);
-                });
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.redirect) {
+                    window.location.href = data.redirect;
+                }
+            })
+            .catch(error => {
+                console.error('Logout failed:', error);
+                alert('Failed to logout. Please try again.');
+            });
         }
     </script>
 </body>

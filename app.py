@@ -26,10 +26,10 @@ def signin():
         return json.dumps(data)
     return json.dumps({"status": False})
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])  # Add POST to methods
 def logout():
-    session.pop('username', None)
-    return redirect(url_for('home'))
+    session.clear()  # Clear all session data, not just username
+    return jsonify({"redirect": url_for('home')})  # Return JSON response with redirect URL
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
